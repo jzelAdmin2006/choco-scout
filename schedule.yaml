@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: choco-schedule
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: choco-scout
+            image: jzeladmin2006/choco-scout:latest
+            env:
+            - name: PAT
+              valueFrom:
+                secretKeyRef:
+                  name: choco-scout-secrets
+                  key: PAT
+            - name: CHOCO_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: choco-scout-secrets
+                  key: CHOCO_API_KEY
+            - name: GIT_REPOS
+              value: "github.com/jzelAdmin2006/icedrive2choco.git"
+          restartPolicy: OnFailure
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
